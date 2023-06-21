@@ -21,7 +21,7 @@
 #include <string>
 
 #include "extrinsic_param.hpp"
-#include "intrinsic_param.hpp"
+#include "intrinsics.hpp"
 #include "projector_lidar.hpp"
 
 using namespace std;
@@ -41,7 +41,7 @@ std::vector<Eigen::Matrix4d, Eigen::aligned_allocator<Eigen::Vector4d>> modifica
 bool display_mode_ = false;
 bool filter_mode_ = false;
 
-bool kbhit() {
+bool keyboard_hit() {
   termios term;
   tcgetattr(0, &term);
   termios term2 = term;
@@ -434,7 +434,7 @@ int main(int argc, char **argv) {
       frame_num++;
     }
 
-    if (kbhit()) {
+    if (keyboard_hit()) {
       int c = getchar();
       if (ManualCalibration(c)) {
         Eigen::Matrix4d transform = calibration_matrix_;
