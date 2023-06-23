@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<camera_name>flir</camera_name>
+<image_width>1920</image_width>
+<image_height>1200</image_height>
+<distortion_model>plumb_bob</distortion_model>
+<camera_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    2.0522816986368998e+03 0. 9.6358428925390945e+02 0.
+    2.0519414869459911e+03 5.9477562809793801e+02 0. 0. 1.</data></camera_matrix>
+<distortion_coefficients type_id="opencv-matrix">
+  <rows>1</rows>
+  <cols>5</cols>
+  <dt>d</dt>
+  <data>
+    -1.8017470448040604e-01 6.2308617528708188e-01
+    -1.0380141911641443e-03 3.2168178405898195e-04
+    -2.0615120930982997e+00</data></distortion_coefficients>
+</opencv_storage>

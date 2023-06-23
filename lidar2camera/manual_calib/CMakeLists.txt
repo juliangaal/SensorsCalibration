@@ -27,3 +27,7 @@ target_link_libraries(run_lidar2camera jsoncpp_lib ${PCL_LIBRARIES} ${Pangolin_L
 add_executable(test src/test.cpp)
 target_link_libraries(test jsoncpp_lib ${PCL_LIBRARIES} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} ${Boost_SYSTEM_LIBRARY})
 target_compile_options(test PRIVATE -Wall -Weffc++)
+
+add_executable(run src/run.cpp src/calibrator.cpp src/projector.cpp)
+target_link_libraries(run jsoncpp_lib ${PCL_LIBRARIES} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} ${Boost_SYSTEM_LIBRARY})
+target_compile_options(run PRIVATE -Wall -Weffc++ -Werror)

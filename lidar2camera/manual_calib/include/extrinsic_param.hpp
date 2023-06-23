@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string>
 
-void LoadExtrinsic(const std::string &filename, Eigen::Matrix4d &extrinsic) {
+inline void LoadExtrinsic(const std::string &filename, Eigen::Matrix4d &extrinsic) {
   Json::Reader reader;
   Json::Value root;
 
@@ -27,7 +27,6 @@ void LoadExtrinsic(const std::string &filename, Eigen::Matrix4d &extrinsic) {
   if (reader.parse(in, root, false)) {
     auto name = root.getMemberNames();
     std::string id = *(name.begin());
-    std::cout << id << std::endl;
     Json::Value data = root[id]["param"]["sensor_calib"]["data"];
     extrinsic << data[0][0].asDouble(), data[0][1].asDouble(),
         data[0][2].asDouble(), data[0][3].asDouble(), data[1][0].asDouble(),
