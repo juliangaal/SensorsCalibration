@@ -19,11 +19,10 @@
 #define OVERLAP_FILTER_WINDOW 4
 #define OVERLAP_DEPTH_TH 0.4 // 0.4m
 
-Projector::Projector(const cv::Mat &img, const pcl::PointCloud<pcl::PointXYZI> &pcl, const Intrinsics &intrinsics,
+Projector::Projector(const Intrinsics &intrinsics,
                      Extrinsics &extrinsics)
-        : img_(img), intrinsics_(intrinsics), cloud_(), extrinsics_(extrinsics), intensities_()
+        : intrinsics_(intrinsics), extrinsics_(extrinsics), intensities_(), img_(), cloud_()
 {
-    load_point_cloud(pcl);
 }
 
 void Projector::apply_roi_filter()
@@ -47,7 +46,7 @@ void Projector::apply_roi_filter()
     cloud_ = temp.colRange(0, cnt);
 }
 
-bool Projector::load_point_cloud(const pcl::PointCloud<pcl::PointXYZI> &pcl)
+void Projector::load_point_cloud(const pcl::PointCloud<pcl::PointXYZI> &pcl)
 {
     cv::Mat mat(pcl.height, pcl.width, CV_32FC4, const_cast<float*>(reinterpret_cast<const float*>(&pcl.points[0])));
 
@@ -68,7 +67,6 @@ bool Projector::load_point_cloud(const pcl::PointCloud<pcl::PointXYZI> &pcl)
         intensities_.push_back(pcl.points[i].intensity);
     }
     // ROIFilter();
-    return true;
 }
 
 cv::Scalar Projector::fake_color(float value)
@@ -233,8 +231,21 @@ cv::Mat Projector::project_to_raw_mat(const cv::Mat &K, const cv::Mat &D, const 
     return outImg;
 }
 
-cv::Mat Projector::project()
+void Projector::load_img(const cv::Mat &mat)
 {
+    img_ = mat;
+}
+
+cv::Mat Projector::project(const cv::Mat &img, const pcl::PointCloud<pcl::PointXYZI> &pcl)
+{
+    if (img.empty() || pcl.empty())
+    {
+        return cv::Mat{};
+    }
+
+    load_point_cloud(pcl);
+    load_img(img);
+
     const Eigen::Matrix<float, 3, 3> r = extrinsics_.mat.block<3, 3>(0, 0).cast<float>();
     cv::Mat R = cv::Mat(3, 3, CV_32FC1);
     cv::eigen2cv(r, R);

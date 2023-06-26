@@ -17,6 +17,7 @@ include_directories(${PCL_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${EIGEN_ROOT})
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/ext)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 link_directories(${OpenCV_LIBRARY_DIRS})

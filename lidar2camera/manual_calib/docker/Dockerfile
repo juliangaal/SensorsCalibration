@@ -13,7 +13,7 @@ RUN apt update && \
     apt install -y python3-pip python3-dev ninja-build build-essential libeigen3-dev cmake git wget vim\
     libjpeg-dev libpng-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev \
     libc++-dev libglew-dev libgl1-mesa-dev libwayland-dev libxkbcommon-dev wayland-protocols libegl1-mesa-dev \
-    libpcl-dev libopencv-dev python3-opencv gdb && \
+    libpcl-dev libopencv-dev python3-opencv gdb zenity && \
     rm -rf /var/lib/apt/lists/*
 
 

@@ -1,0 +1,3 @@
+[submodule "lidar2camera/manual_calib/ext/portable-file-dialogs"]
+	path = lidar2camera/manual_calib/ext/portable-file-dialogs
+	url = git@github.com:juliangaal/portable-file-dialogs.git

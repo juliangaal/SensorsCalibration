@@ -297,7 +297,7 @@ int main(int argc, char **argv)
     mat_calib_box.push_back(addZtrans);
     mat_calib_box.push_back(minusZtrans);
 
-    cv::Mat current_frame = projector.project();
+    cv::Mat current_frame = projector.project(<#initializer#>, 0);
     int frame_num = 0;
 
     std::cout << "\n=>START\n";
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
             if (display_mode_ == false)
             {
                 projector.set_intensity_color(true);
-                current_frame = projector.project();
+                current_frame = projector.project(<#initializer#>, 0);
                 display_mode_ = true;
             }
         } else
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
             if (display_mode_ == true)
             {
                 projector.set_intensity_color(false);
-                current_frame = projector.project();
+                current_frame = projector.project(<#initializer#>, 0);
                 display_mode_ = false;
             }
         }
@@ -327,7 +327,7 @@ int main(int argc, char **argv)
             if (filter_mode_ == false)
             {
                 projector.set_overlap_filter(true);
-                current_frame = projector.project();
+                current_frame = projector.project(<#initializer#>, 0);
                 filter_mode_ = true;
             }
         } else
@@ -335,7 +335,7 @@ int main(int argc, char **argv)
             if (filter_mode_ == true)
             {
                 projector.set_overlap_filter(false);
-                current_frame = projector.project();
+                current_frame = projector.project(<#initializer#>, 0);
                 filter_mode_ = false;
             }
         }
@@ -364,7 +364,7 @@ int main(int argc, char **argv)
         {
             int ptsize = pointSize.Get();
             projector.set_point_size(ptsize);
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "point size changed to " << ptsize << std::endl;
         }
         for (int i = 0; i < 12; i++)
@@ -373,32 +373,32 @@ int main(int argc, char **argv)
             {
                 extrinsics.mat = extrinsics.mat * inc_transform_change[i];
                 std::cout << "Changed!\n";
-                current_frame = projector.project();
+                current_frame = projector.project(<#initializer#>, 0);
             }
         }
 
         if (pangolin::Pushed(addFx))
         {
             intrinsic_matrix_(0, 0) *= cali_scale_fxfy_;
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "fx changed to " << intrinsic_matrix_(0, 0) << std::endl;
         }
         if (pangolin::Pushed(minusFx))
         {
             intrinsic_matrix_(0, 0) /= cali_scale_fxfy_;
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "fx changed to " << intrinsic_matrix_(0, 0) << std::endl;
         }
         if (pangolin::Pushed(addFy))
         {
             intrinsic_matrix_(1, 1) *= cali_scale_fxfy_;
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "fy changed to " << intrinsic_matrix_(1, 1) << std::endl;
         }
         if (pangolin::Pushed(minusFy))
         {
             intrinsic_matrix_(1, 1) /= cali_scale_fxfy_;
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "fy changed to " << intrinsic_matrix_(1, 1) << std::endl;
         }
 
@@ -406,7 +406,7 @@ int main(int argc, char **argv)
         {
             extrinsics.mat = orign_extrinsics.mat;
             intrinsic_matrix_ = orign_intrinsic_matrix_;
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
             std::cout << "Reset!\n";
         }
         if (pangolin::Pushed(saveImg))
@@ -426,7 +426,7 @@ int main(int argc, char **argv)
                 Eigen::Matrix4d transform = extrinsics.mat;
                 cout << "\nTransfromation Matrix:\n" << transform << std::endl;
             }
-            current_frame = projector.project();
+            current_frame = projector.project(<#initializer#>, 0);
         }
 
         imageArray = current_frame.data;

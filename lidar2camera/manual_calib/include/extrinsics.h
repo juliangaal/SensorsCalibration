@@ -14,6 +14,9 @@ struct Extrinsics
     {
         LoadExtrinsic(filename, mat);
         original = mat;
+        Eigen::Vector3d ea = mat.block<3, 3>(0, 0).eulerAngles(0, 1, 2);
+        std::cout << "to Euler angles:" << std::endl;
+        std::cout << ea << "\n\n";
     }
 
     inline void reset() { mat = original; }
