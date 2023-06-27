@@ -3,6 +3,7 @@
 #include <pcl/io/pcd_io.h>
 #include "calibrator.h"
 #include "portable-file-dialogs/portable-file-dialogs.h"
+#include <thread>
 
 Calibrator::Calibrator(const Intrinsics &intrinsics, Extrinsics &extrinsics)
         : projector(intrinsics, extrinsics)
@@ -52,50 +53,50 @@ void Calibrator::run()
     pangolin::Var<bool> overlap_filter_btn("ui.Overlap Filter", false, true);
     pangolin::Var<double> degree_step_slider("ui.deg step", 0.3, 0, 1);
     pangolin::Var<double> t_step_slider("ui.t step(cm)", 6, 0, 15);
-    pangolin::Var<double> fxfyScale("ui.fxfy scale", 1.005, 1, 1.1);
     pangolin::Var<int> point_size_slider("ui.point size", 3, 1, 5);
 
+    auto [roll_init, pitch_init, yaw_init, x_init, y_init, z_init] = projector.get_extrinsics().get_rpyxyz();
+
+    pangolin::Var<double> roll_slider("ui.roll", roll_init, -M_PI, M_PI);
     pangolin::Var<bool> plus_roll_btn("ui.+ roll", false, false);
     pangolin::Var<bool> minus_roll_btn("ui.- roll", false, false);
+    pangolin::Var<double> pitch_slider("ui.pitch", pitch_init, -M_PI, M_PI);
     pangolin::Var<bool> plus_pitch_btn("ui.+ pitch", false, false);
     pangolin::Var<bool> minus_pitch_btn("ui.- pitch", false, false);
+    pangolin::Var<double> yaw_slider("ui.yaw", yaw_init, -M_PI, M_PI);
     pangolin::Var<bool> plus_yaw_btn("ui.+ yaw", false, false);
     pangolin::Var<bool> minus_yaw_btn("ui.- yaw", false, false);
+    pangolin::Var<double> x_slider("ui.x", x_init, 5, -5);
     pangolin::Var<bool> plus_x_btn("ui.+ x", false, false);
     pangolin::Var<bool> minus_x_btn("ui.- x", false, false);
+    pangolin::Var<double> y_slider("ui.y", y_init, -5, 5);
     pangolin::Var<bool> plus_y_btn("ui.+ y", false, false);
     pangolin::Var<bool> minus_y_btn("ui.- y", false, false);
+    pangolin::Var<double> z_slider("ui.z", z_init, -5, 5);
     pangolin::Var<bool> plus_z_btn("ui.+ z", false, false);
     pangolin::Var<bool> minus_z_btn("ui.- z", false, false);
-
-    pangolin::Var<bool> reset_parameters_btn("ui.Reset Parameters", false, false);
-    pangolin::Var<bool> save_img_btn("ui.Save Image", false, false);
-
-    pangolin::Var<int> current_image("ui.Image", 0);
-    pangolin::Var<bool> image_switch_btn("ui.Switch Image", false, false);
 
     pangolin::Var<bool> image_load_btn("ui.Load Image", false, false);
     pangolin::Var<bool> pcd_load_btn("ui.Load PCD", false, false);
 
-    std::vector<pangolin::Var<bool>> mat_calib_box;
-    mat_calib_box.push_back(plus_roll_btn);
-    mat_calib_box.push_back(minus_roll_btn);
-    mat_calib_box.push_back(plus_pitch_btn);
-    mat_calib_box.push_back(minus_pitch_btn);
-    mat_calib_box.push_back(plus_yaw_btn);
-    mat_calib_box.push_back(minus_yaw_btn);
-    mat_calib_box.push_back(plus_x_btn);
-    mat_calib_box.push_back(minus_x_btn);
-    mat_calib_box.push_back(plus_y_btn);
-    mat_calib_box.push_back(minus_y_btn);
-    mat_calib_box.push_back(plus_z_btn);
-    mat_calib_box.push_back(minus_z_btn);
+    pangolin::Var<bool> reset_parameters_btn("ui.Reset Parameters", false, false);
+    pangolin::Var<bool> save("ui.Save", false, false);
 
-    pangolin::Var<double> roll_slider("ui.roll", 0, -M_PI, M_PI);
-    pangolin::Var<double> pitch_slider("ui.pitch", 0, -M_PI, M_PI);
-    pangolin::Var<double> yaw_slider("ui.yaw", 0, -M_PI, M_PI);
+    std::vector<pangolin::Var<bool>> mat_calib_btns;
+    mat_calib_btns.push_back(plus_roll_btn);
+    mat_calib_btns.push_back(minus_roll_btn);
+    mat_calib_btns.push_back(plus_pitch_btn);
+    mat_calib_btns.push_back(minus_pitch_btn);
+    mat_calib_btns.push_back(plus_yaw_btn);
+    mat_calib_btns.push_back(minus_yaw_btn);
+    mat_calib_btns.push_back(plus_x_btn);
+    mat_calib_btns.push_back(minus_x_btn);
+    mat_calib_btns.push_back(plus_y_btn);
+    mat_calib_btns.push_back(minus_y_btn);
+    mat_calib_btns.push_back(plus_z_btn);
+    mat_calib_btns.push_back(minus_z_btn);
 
-    cv::Mat current_frame {};
+    cv::Mat current_frame{};
 
     while (!pangolin::ShouldQuit())
     {
@@ -127,6 +128,17 @@ void Calibrator::run()
                 }
             }
 
+            if (roll_slider.GuiChanged() || pitch_slider.GuiChanged() || yaw_slider.GuiChanged())
+            {
+                projector.get_extrinsics().update_rpy_from_slider(roll_slider, pitch_slider, yaw_slider);
+            }
+
+            if (x_slider.GuiChanged() || y_slider.GuiChanged() || z_slider.GuiChanged())
+            {
+                projector.get_extrinsics().update_xyz_from_slider(-1.0 * x_slider, -1.0 * y_slider, -1.0 * z_slider);
+            }
+
+
             if (degree_step_slider.GuiChanged())
             {
                 p.change_rate_rpy_ = degree_step_slider.Get();
@@ -149,9 +161,10 @@ void Calibrator::run()
 
             for (size_t i = 0; i < inc_transform_change_.size(); i++)
             {
-                if (pangolin::Pushed(mat_calib_box[i]))
+                if (pangolin::Pushed(mat_calib_btns[i]))
                 {
-                    projector.get_extrinsics().mat *= inc_transform_change_[i];
+                    const auto& change = inc_transform_change_[i];
+                    projector.get_extrinsics().update_incremental(change);
                 }
             }
 
@@ -161,17 +174,26 @@ void Calibrator::run()
                 std::cout << "Reset Parameters\n";
             }
 
-            if (pangolin::Pushed(save_img_btn))
+            if (pangolin::Pushed(save))
             {
 //            saveResult(current_frame, frame_num);
+                projector.get_extrinsics().save("lidar2cv.xml");
                 Eigen::Matrix4d transform = projector.get_extrinsics().mat;
-                std::cout << "Saving:\n" << transform << std::endl;
+                std::cout << "Saving lidar2cv calibration:\n" << transform << std::endl;
             }
 
             if (pangolin::Pushed(image_switch_btn))
             {
                 current_image = !current_image;
             }
+
+            auto [roll, pitch, yaw, x, y, z] = projector.get_extrinsics().get_rpyxyz();
+            roll_slider = roll;
+            pitch_slider = pitch;
+            yaw_slider = yaw;
+            x_slider = x;
+            y_slider = y;
+            z_slider = z;
 
             current_frame = projector.project(img_, cloud_);
         }
@@ -202,7 +224,7 @@ void Calibrator::run()
             }
             else
             {
-                const auto& lidar_path = selection[0];
+                const auto &lidar_path = selection[0];
                 if (!load_pcl(lidar_path))
                 {
                     std::cout << "Couldn't load pcl\n";

@@ -101,7 +101,7 @@ void CalibrationScaleChange() {
         tmp(2, 3) = transform_flag[5] * cali_scale_trans_;
         modification_list_[i] = tmp;
     }
-    std::cout << "=>Calibration scale update done!\n";
+    std::cout << "=>Calibration scale update_xyz_from_slider done!\n";
 }
 
 void saveResult(const cv::Mat &calib_img, const int &frame_id) {

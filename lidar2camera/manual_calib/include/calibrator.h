@@ -7,6 +7,12 @@
 #include <pcl/point_types.h>
 #include <pangolin/pangolin.h>
 
+//template <typename T>
+//struct SliderWithChange : pangolin::Var<T>
+//{
+//    SliderWithChange()
+//};
+
 class Calibrator
 {
 public:
